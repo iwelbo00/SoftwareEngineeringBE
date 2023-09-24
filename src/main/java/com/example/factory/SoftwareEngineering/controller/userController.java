@@ -13,6 +13,8 @@ import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/users")
+@CrossOrigin("http://localhost:8081/")
+
 public class userController {
     private userService userService;
 
@@ -33,11 +35,10 @@ public class userController {
         return userRepository.findAll();
     }
 
-    @GetMapping("/login")
-    public ResponseEntity<String> login(@RequestParam String username,
-                                        @RequestParam String password_hash){
-        userDetails user = userRepository.findByUsernameAndPasswordHash(username,
-                userService.hashString(password_hash));
+    @PostMapping("/login")
+    public ResponseEntity<String> login(@RequestBody userDetails request){
+        userDetails user = userRepository.findByUsernameAndPasswordHash(request.getUsername(),
+                userService.hashString(request.getPasswordHash()));
         if(user != null){
             return ResponseEntity.ok("Authorization Successful");
         }else{
