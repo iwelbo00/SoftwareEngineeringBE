@@ -13,7 +13,7 @@ import java.util.*;
 @RestController
 @RequestMapping("/api")
 @CrossOrigin("http://localhost:8081/")
-public class EmployeeController {
+public class orderController {
 
     @Autowired
     private orderRepository orderRepository;

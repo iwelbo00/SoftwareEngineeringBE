@@ -12,7 +12,6 @@ import lombok.*;
 public class orderDetails {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-
     private int orderId;
     @Column(name = "creation_date", nullable = false)
     private String creationDate;
