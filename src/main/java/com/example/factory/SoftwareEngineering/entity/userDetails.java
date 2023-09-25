@@ -12,11 +12,16 @@ import lombok.*;
 public class userDetails {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-
-    private int id;
+    private int userId;
+    @Column(name = "firstname")
     private String firstname;
+    @Column(name="lastname")
     private String lastname;
+    @Column(name="username")
     private String username;
+    @Column(name="passwordHash")
     private String passwordHash;
+    @OneToMany(mappedBy = "user")
+    private orderDetails orderDetails;
 
 }
