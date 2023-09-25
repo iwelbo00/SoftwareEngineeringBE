@@ -1,6 +1,7 @@
 package com.example.factory.SoftwareEngineering.controller;
 
 import com.example.factory.SoftwareEngineering.entity.userDetails;
+import org.apache.coyote.Response;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -26,8 +27,13 @@ public class userController {
     }
 
     @PostMapping("/register")
-    public userDetails registerUser(@RequestBody userDetails request) {
-        return userService.createUser(request.getFirstname(), request.getLastname(), request.getUsername(), request.getPasswordHash());
+    public ResponseEntity<?> registerUser(@RequestBody userDetails request) {
+        userDetails user = userRepository.findByUsername(request.getUsername());
+        if(user == null){
+            return ResponseEntity.ok(userService.createUser(request.getFirstname(), request.getLastname(), request.getUsername(), request.getPasswordHash()));
+        }else{
+            return ResponseEntity.badRequest().body("Username already taken");
+        }
     }
 
     @GetMapping("/getUsers")
