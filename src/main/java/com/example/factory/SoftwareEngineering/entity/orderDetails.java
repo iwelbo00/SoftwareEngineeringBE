@@ -12,12 +12,26 @@ import lombok.*;
 public class orderDetails {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int orderId;
-    @Column(name = "creation_date", nullable = false)
-    private String creationDate;
-    @Column(name = "quantity")
-    private int qty;
-    @Column(name="totalCost")
-    private double totalCost;
+    @Column(name = "order_id")
+    private Long orderId;
 
+    @ManyToOne
+    @JoinColumn(name = "user_id")
+    private userDetails user;
+
+    @Column(name = "quantity")
+    private int quantity;
+
+    @Column(name = "order_date")
+    private String orderDate;
+
+    @Column(name = "cost")
+    private double cost;
+
+    @Column(name = "delivery_date")
+    private String deliveryDate;
+
+    @ManyToOne
+    @JoinColumn(name = "item_id")
+    private inventoryDetails inventory;
 }
