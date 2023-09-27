@@ -13,10 +13,6 @@ public class SoftwareEngineeringApplication implements CommandLineRunner {
 	public static void main(String[] args) {
 		SpringApplication.run(SoftwareEngineeringApplication.class, args);
 	}
-
-	@Autowired
-	private orderRepository orderRepository;
-
 	@Override
 	public void run(String... args) throws Exception{
 
