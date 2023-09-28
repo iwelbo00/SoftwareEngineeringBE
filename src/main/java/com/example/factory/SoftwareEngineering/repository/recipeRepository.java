@@ -7,4 +7,5 @@ import java.util.List;
 
 public interface recipeRepository extends JpaRepository<recipeDetails, Long> {
 
+    public recipeDetails findByRecipeId(long id);
 }

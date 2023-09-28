@@ -15,10 +15,10 @@ public class recipeDetails {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "recipeId")
-    private Long recipeId;
+    private long recipeId;
 
     @ManyToOne
-    @JoinColumn(name = "rawMaterial")
+    @JoinColumn(name = "rawMaterialID")
     private rawMaterialDetails rawMaterialDetails;
 
     @Column(name = "amountToUse")
