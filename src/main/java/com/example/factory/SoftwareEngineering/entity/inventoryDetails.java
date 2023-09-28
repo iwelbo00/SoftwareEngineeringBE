@@ -19,10 +19,14 @@ public class inventoryDetails {
     private String itemName;
     @Column(name = "quantity_on_hand")
     private int quantityOnHand;
-
     @Column(name = "minimum_creation")
     private int minimumCreation;
-
     @Column(name = "cost")
     private double cost;
+    @Column(name = "description")
+    private String description;
+
+    @OneToOne
+    @JoinColumn(name = "recipeId")
+    private recipeDetails recipeId;
 }
