@@ -1,7 +1,6 @@
 package com.example.factory.SoftwareEngineering.controller;
 
 import com.example.factory.SoftwareEngineering.entity.userDetails;
-import org.apache.coyote.Response;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -10,7 +9,6 @@ import com.example.factory.SoftwareEngineering.services.userService;
 import com.example.factory.SoftwareEngineering.repository.userRepository;
 
 import java.util.List;
-import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/users")

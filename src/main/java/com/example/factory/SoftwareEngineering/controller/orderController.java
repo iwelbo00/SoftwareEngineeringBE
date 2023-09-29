@@ -45,28 +45,36 @@ public class orderController {
         userDetails user = userRepository.findByUsername(orderDetails.getUser().getUsername());
         orderDetails.setUser(user);
         inventoryDetails inventoryDetails = inventoryRepository.findByItemId(orderDetails.getInventory().getItemId());
-        while (inventoryDetails.getQuantityOnHand() < orderDetails.getQuantity()) {
-            inventoryDetails.setQuantityOnHand(inventoryDetails.getQuantityOnHand() + inventoryDetails.getMinimumCreation());
-            recipeDetails recipe = inventoryDetails.getRecipeId();
-            rawMaterialDetails rawMaterials = recipe.getRawMaterialDetails();
-            while (rawMaterials.getQtyOnHand() < recipe.getAmountToUse()) {
-                transactionHistoryDetails transactions = craftTransactionHistoryDetails(user, "Restocking", ("Ordering " + rawMaterials.getMinToOrder()
-                        + " " + rawMaterials.getName() + "s"));
-                rawMaterials.setQtyOnHand(rawMaterials.getQtyOnHand() + rawMaterials.getMinToOrder());
+        if((orderDetails.getQuantity() * orderDetails.getCost()) < 2000) {
+            while (inventoryDetails.getQuantityOnHand() < orderDetails.getQuantity()) {
+                inventoryDetails.setQuantityOnHand(inventoryDetails.getQuantityOnHand() + inventoryDetails.getMinimumCreation());
+                recipeDetails recipe = inventoryDetails.getRecipeId();
+                rawMaterialDetails rawMaterials = recipe.getRawMaterialDetails();
+                while (rawMaterials.getQtyOnHand() < recipe.getAmountToUse()) {
+                    transactionHistoryDetails transactions = craftTransactionHistoryDetails(user, "Restocking", ("Ordering " + rawMaterials.getMinToOrder()
+                            + " " + rawMaterials.getName() + "s"));
+                    rawMaterials.setQtyOnHand(rawMaterials.getQtyOnHand() + rawMaterials.getMinToOrder());
+                    transactionHistoryRepository.save(transactions);
+                }
+                rawMaterials.setQtyOnHand(rawMaterials.getQtyOnHand() - recipe.getAmountToUse());
+                rawMaterialRepository.save(rawMaterials);
+                transactionHistoryDetails transactions = craftTransactionHistoryDetails(user, "Crafting more", ("Crafting " + inventoryDetails.getMinimumCreation() +
+                        " " + inventoryDetails.getItemName() + "s"));
                 transactionHistoryRepository.save(transactions);
             }
-            rawMaterials.setQtyOnHand(rawMaterials.getQtyOnHand() - recipe.getAmountToUse());
-            rawMaterialRepository.save(rawMaterials);
-            transactionHistoryDetails transactions = craftTransactionHistoryDetails(user, "Crafting more", ("Crafting " + inventoryDetails.getMinimumCreation() +
-                    " " + inventoryDetails.getItemName() + "s"));
-            transactionHistoryRepository.save(transactions);
+            inventoryDetails.setQuantityOnHand(inventoryDetails.getQuantityOnHand() - orderDetails.getQuantity());
+            inventoryRepository.save(inventoryDetails);
+            orderDetails.setOrderStatus("Accepted");
+        }else{
+            orderDetails.setOrderStatus("Rejected");
         }
-        inventoryDetails.setQuantityOnHand(inventoryDetails.getQuantityOnHand() - orderDetails.getQuantity());
-        inventoryRepository.save(inventoryDetails);
-        if (orderDetails != null) {
+        if (orderDetails.getOrderStatus().equals("Accepted")) {
             orderRepository.save(orderDetails);
             return ResponseEntity.ok("Order Success");
-        } else {
+        } else if(orderDetails.getOrderStatus().equals("Rejected")){
+            orderRepository.save(orderDetails);
+            return ResponseEntity.ok("Order Rejected");
+        }else{
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Authentication failed");
         }
     }
