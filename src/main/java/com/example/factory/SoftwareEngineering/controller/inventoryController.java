@@ -5,6 +5,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import com.example.factory.SoftwareEngineering.repository.inventoryRepository;
 
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 @RestController
@@ -24,7 +26,16 @@ public class inventoryController {
      */
     @GetMapping("/getInventory")
     public List<inventoryDetails> loginUser(){
-        return inventoryRepository.findAll();
+        List<inventoryDetails> inventoryList = inventoryRepository.findAll();
+        Collections.sort(inventoryList, new Comparator<inventoryDetails>() {
+            @Override
+            public int compare(inventoryDetails item1, inventoryDetails item2) {
+                // Compare in reverse order
+                return Long.compare(item1.getItemId(), item2.getItemId());
+            }
+        });
+        return inventoryList;
     }
+
 
 }

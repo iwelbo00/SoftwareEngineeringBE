@@ -44,7 +44,7 @@ public class userController {
         userDetails user = userRepository.findByUsernameAndPasswordHash(request.getUsername(),
                 userService.hashString(request.getPasswordHash()));
         if(user != null){
-            return ResponseEntity.ok("Authorization Successful");
+            return ResponseEntity.ok("Authorization Successful " + user.getUserId());
         }else{
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Authentication failed");
         }

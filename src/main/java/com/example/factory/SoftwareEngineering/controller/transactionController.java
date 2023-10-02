@@ -17,7 +17,7 @@ public class transactionController {
     private transactionHistoryRepository transactionHistoryRepository;
 
     @GetMapping("/getTransaction")
-    public List<transactionHistoryDetails> loginUser(){
+    public List<transactionHistoryDetails> getTransactionHistory(){
         return transactionHistoryRepository.findAll();
     }
 

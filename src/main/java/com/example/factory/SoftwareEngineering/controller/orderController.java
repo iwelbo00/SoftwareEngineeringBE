@@ -10,12 +10,14 @@ import org.springframework.web.bind.annotation.*;
 import com.example.factory.SoftwareEngineering.services.dateService;
 
 
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 import com.example.factory.SoftwareEngineering.entity.userDetails;
 
 @RestController
 @RequestMapping("/api/orders")
-@CrossOrigin("http://localhost:8081")
+@CrossOrigin("http://localhost:8081/")
 public class orderController {
 
     @Autowired
@@ -35,7 +37,7 @@ public class orderController {
     public List<orderDetails> fetchOrders(){
         return orderRepository.findAll();
     }
-    @GetMapping("/findByUsername")
+    @PostMapping("/findByUsername")
     public List<orderDetails> fetchByUsernameOrders(@RequestBody userDetails userDetails){
         userDetails temp = userRepository.findByUsername(userDetails.getUsername());
         return orderRepository.findByUser_UserId(temp.getUserId());
@@ -46,7 +48,8 @@ public class orderController {
         orderDetails.setUser(user);
         inventoryDetails inventoryDetails = inventoryRepository.findByItemId(orderDetails.getInventory().getItemId());
         if((orderDetails.getQuantity() * orderDetails.getCost()) < 2000) {
-            while (inventoryDetails.getQuantityOnHand() < orderDetails.getQuantity()) {
+            while (inventoryDetails.getQuantityOnHand() < orderDetails.getQuantity() + inventoryDetails.getMinimumCreation()) {
+                orderDetails.setDeliveryDate(alterDate(orderDetails.getOrderDate(), 10));
                 inventoryDetails.setQuantityOnHand(inventoryDetails.getQuantityOnHand() + inventoryDetails.getMinimumCreation());
                 recipeDetails recipe = inventoryDetails.getRecipeId();
                 rawMaterialDetails rawMaterials = recipe.getRawMaterialDetails();
@@ -69,6 +72,7 @@ public class orderController {
             orderDetails.setOrderStatus("Rejected");
         }
         if (orderDetails.getOrderStatus().equals("Accepted")) {
+            orderDetails.setDeliveryDate(alterDate(orderDetails.getOrderDate(), 5));
             orderRepository.save(orderDetails);
             return ResponseEntity.ok("Order Success");
         } else if(orderDetails.getOrderStatus().equals("Rejected")){
@@ -90,4 +94,15 @@ public class orderController {
         return transactions;
     }
 
+    public String alterDate(String inputDate, int days){
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MM/dd/yyyy");
+        try {
+            LocalDate date = LocalDate.parse(inputDate, formatter);
+            LocalDate newDate = date.plusDays(days);
+            String formattedNewDate = newDate.format(formatter);
+            return formattedNewDate;
+        } catch (java.time.format.DateTimeParseException e) {
+            return null;
+        }
+    }
 }
